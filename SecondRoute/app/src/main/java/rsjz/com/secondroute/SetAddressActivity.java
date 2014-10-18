@@ -72,6 +72,7 @@ public class SetAddressActivity extends Activity implements
             map.setTrafficEnabled(true);
             map.setMyLocationEnabled(true);
 
+
             mLocationClient = new LocationClient(this, this, this);
 
             findViewById(R.id.set).setOnClickListener(new View.OnClickListener() {
