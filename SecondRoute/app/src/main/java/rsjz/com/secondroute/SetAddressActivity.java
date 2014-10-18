@@ -104,6 +104,12 @@ public class SetAddressActivity extends Activity implements
                                     .putFloat("worklng", (float) lng)
                                     .putString("work_address", placeName).commit();
                         }
+                        prefs.edit().putString("preferredRouteHome", "")
+                                .putString("preferredRouteWork", "")
+                                .putString("pathHome", "")
+                                .putString("pathWork", "")
+                                .commit();
+
                         String key = "home";
                         if (!home)
                         {

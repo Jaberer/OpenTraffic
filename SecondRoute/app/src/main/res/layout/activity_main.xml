@@ -8,6 +8,7 @@
 
     android:fadingEdge="none"
     android:clipToPadding="false"
+        android:id="@+id/scrollView"
     android:paddingBottom="@dimen/activity_vertical_margin"
 
     tools:context=".MainActivity"
@@ -42,22 +43,72 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/preferred_route"
-                android:text="Preferred Route to Work: "/>
-            <Button
-                android:layout_width="match_parent"
-                android:id="@+id/set_preferred_route"
-                android:text="Set Preferred Route to Work"
-                android:layout_height="wrap_content" />
+                android:text="Home to Work: "/>
+            <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="horizontal" android:layout_width="match_parent"
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                android:layout_margin="5dp"
+                card_view:cardCornerRadius="5dp"
+                android:layout_height="150dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <Button android:id="@+id/tapToSetupWork"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:text="Tap to Choose Preferred Route"
+                        android:layout_centerInParent="true"/>
+                    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="match_parent"
+                        android:id="@+id/mapCardWorkContainer"
+                        android:layout_height="match_parent">
+                        <fragment android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/mapCardWork"
+                            android:name="rsjz.com.secondroute.WorkaroundMapFragment"/>
+
+                    </FrameLayout>
+
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/preferred_route_home"
-                android:text="Preferred Route to Home: "/>
-            <Button
+                android:text="Work to Home: "/>
+        <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal" android:layout_width="match_parent"
+            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:layout_margin="5dp"
+            card_view:cardCornerRadius="5dp"
+            android:layout_height="150dp">
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:id="@+id/set_preferred_route_home"
-                android:text="Set Preferred Route to Home"
-                android:layout_height="wrap_content" />
+                android:layout_height="match_parent">
+                <Button android:id="@+id/tapToSetupHome"
+                    android:layout_width="wrap_content"
+                    android:visibility="gone"
+                    android:layout_height="wrap_content"
+                    android:text="Tap to Choose Preferred Route"
+                    android:layout_centerInParent="true"/>
+                <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:id="@+id/mapCardHomeContainer"
+                    android:layout_height="match_parent">
+                    <fragment android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/mapCardHome"
+                        android:name="rsjz.com.secondroute.WorkaroundMapFragment"/>
+
+                </FrameLayout>
+
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
             <Button
                 android:layout_width="match_parent"
                 android:id="@+id/test_exit_geofence"

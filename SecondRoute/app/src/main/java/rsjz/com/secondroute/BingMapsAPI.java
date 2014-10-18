@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,7 +42,7 @@ public class BingMapsAPI {
             key += "Work";
         }
         String route = PreferenceManager.getDefaultSharedPreferences(context).getString(key, "");
-        return Arrays.asList(route.split("\n"));
+        return Arrays.asList(route.split(";"));
     }
     public static ArrayList<Route> getDirectionsList (float lat1, float lng1, float lat2, float lng2)
     {
@@ -115,7 +118,7 @@ public class BingMapsAPI {
         }
         return null;
     }
-    public static ArrayList<String> getListOfPossibleRoutes(Context context, boolean home)
+    public static ArrayList<Route> getListOfPossibleRoutes(Context context, boolean home)
     {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         if (home)
@@ -127,7 +130,7 @@ public class BingMapsAPI {
         }
 
     }
-    public static ArrayList<String> getListOfPossibleRoutes (float lat1, float lng1, float lat2, float lng2)
+    public static ArrayList<Route> getListOfPossibleRoutes (float lat1, float lng1, float lat2, float lng2)
     {
         HttpURLConnection conn = null;
         StringBuilder jsonResults = new StringBuilder();
@@ -140,7 +143,6 @@ public class BingMapsAPI {
             sb.append("&maxSolns=3");
 
             sb.append("&optmz=timeWithTraffic");
-            sb.append("&rpo=none");
 
             URL url = new URL(sb.toString());
             conn = (HttpURLConnection) url.openConnection();
@@ -161,24 +163,33 @@ public class BingMapsAPI {
         }
 
         try {
-            ArrayList<String> routesList = new ArrayList<String>();
+            ArrayList<Route> routesList = new ArrayList<Route>();
             // Create a JSON object hierarchy from the results
             JSONObject jsonObj = new JSONObject(jsonResults.toString());
             JSONArray resourcesArray = jsonObj.getJSONArray("resourceSets").getJSONObject(0).getJSONArray("resources");
             for (int resourceIndex = 0; resourceIndex < resourcesArray.length(); resourceIndex++) {
                 JSONObject resourceObj = resourcesArray.getJSONObject(resourceIndex);
+                JSONArray bounds = resourceObj.getJSONArray("bbox");
+
                 JSONArray itineraryItems = resourceObj.getJSONArray("routeLegs").getJSONObject(0).getJSONArray("itineraryItems");
-                String route = "";
+                ArrayList<String> instructions = new ArrayList<String>();
+                ArrayList<LatLng> path = new ArrayList<LatLng>();
+
                 for (int index = 0; index < itineraryItems.length(); index++) {
                     JSONObject itinerary = itineraryItems.getJSONObject(index);
-                    String instruction = itinerary.getJSONObject("instruction").getString("text") + "\n";
+                    String instruction = itinerary.getJSONObject("instruction").getString("text");
                     if (!instruction.toLowerCase().startsWith("road name changes"))
                     {
-                        route += instruction;
+                        instructions.add(instruction);
                     }
+                    JSONArray coordinates = itinerary.getJSONObject("maneuverPoint").getJSONArray("coordinates");
+                    path.add(new LatLng(coordinates.getDouble(0), coordinates.getDouble((1))));
 
-                }
-                route = route.substring(0, route.length() - 1);
+            }
+                Route route = new Route();
+                route.instructions = instructions;
+                route.path = path;
+                route.latLngBounds = new LatLngBounds(new LatLng(bounds.getDouble(0), bounds.getDouble(1)), new LatLng(bounds.getDouble(2), bounds.getDouble(3)));
                 routesList.add(route);
             }
             return routesList;

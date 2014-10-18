@@ -66,6 +66,8 @@ public class BackgroundService extends IntentService
                 i.putExtra("differenceInTime", routeWithMaxConfidence.durationMinutes - pr.get(0).durationMinutes);
                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
+                Intent service = new Intent(this, ContextService.class);
+                stopService(service);
             }
             else {
                 mHandler.post(new Runnable() {

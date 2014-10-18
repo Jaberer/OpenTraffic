@@ -9,13 +9,25 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ScrollView;
+import android.widget.Scroller;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 
 public class MainActivity extends Activity {
@@ -41,22 +53,7 @@ public class MainActivity extends Activity {
                 startActivity(i);
             }
         });
-        findViewById(R.id.set_preferred_route).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, ChoosePreferredRouteActivity.class);
-                i.putExtra("home", false);
-                startActivity(i);
-            }
-        });
-        findViewById(R.id.set_preferred_route_home).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, ChoosePreferredRouteActivity.class);
-                i.putExtra("home", true);
-                startActivity(i);
-            }
-        });
+
         findViewById(R.id.test_exit_geofence).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -80,6 +77,131 @@ public class MainActivity extends Activity {
                 startActivity(i);
             }
         });
+        ((WorkaroundMapFragment) getFragmentManager().findFragmentById(R.id.mapCardWork)).setListener(new WorkaroundMapFragment.OnTouchListener() {
+            @Override
+            public void onTouch() {
+                ((ScrollView)findViewById(R.id.scrollView)).requestDisallowInterceptTouchEvent(true);
+            }
+        });
+        ((WorkaroundMapFragment) getFragmentManager().findFragmentById(R.id.mapCardHome)).setListener(new WorkaroundMapFragment.OnTouchListener() {
+            @Override
+            public void onTouch() {
+                ((ScrollView)findViewById(R.id.scrollView)).requestDisallowInterceptTouchEvent(true);
+            }
+        });
+
+    }
+
+    private void setupMaps() {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (prefs.getString("pathWork", "").equals(""))
+        {
+            findViewById(R.id.tapToSetupWork).setVisibility(View.VISIBLE);
+            findViewById(R.id.mapCardWorkContainer).setVisibility(View.GONE);
+            findViewById(R.id.tapToSetupWork).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (prefs.getFloat("homelat", 0) != 0 && prefs.getFloat("homelng", 0) != 0 && prefs.getFloat("worklat", 0) != 0 && prefs.getFloat("worklng", 0) != 0) {
+                        Intent i = new Intent(MainActivity.this, ChoosePreferredRouteActivity.class);
+                        i.putExtra("home", false);
+                        startActivity(i);
+                    }
+                    else {
+                        Toast.makeText(MainActivity.this, "Please first enter home and work locations", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+        else {
+            findViewById(R.id.tapToSetupWork).setVisibility(View.GONE);
+            findViewById(R.id.mapCardWorkContainer).setVisibility(View.VISIBLE);
+            final MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapCardWork);
+
+            final GoogleMap map = mapFragment.getMap();
+            map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
+                    Intent i = new Intent(MainActivity.this, ChoosePreferredRouteActivity.class);
+                    i.putExtra("home", false);
+                    startActivity(i);
+                }
+            });
+            map.setMyLocationEnabled(false);
+            map.setOnMapLoadedCallback  (new GoogleMap.OnMapLoadedCallback() {
+                @Override
+                public void onMapLoaded() {
+                    float coor1 = prefs.getFloat("Workswlat", 0);
+                    float coor2 = prefs.getFloat("Workswlng", 0);
+                    float coor3 = prefs.getFloat("Worknelat", 0);
+                    float coor4 = prefs.getFloat("Worknelng", 0);
+
+                    map.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(new LatLng(coor1, coor2), new LatLng(coor3, coor4)), 100));
+                }
+            });
+            PolylineOptions rectOptions = new PolylineOptions();
+            rectOptions.color(getResources().getColor(android.R.color.holo_red_dark));
+            List<String> coordinates = Arrays.asList(prefs.getString("pathWork", "").split(";"));
+            for (int i = 0; i < coordinates.size(); i+=2)
+            {
+                rectOptions.add(new LatLng(Double.parseDouble(coordinates.get(i)), Double.parseDouble(coordinates.get(i+1))));
+            }
+            rectOptions.width(20);
+            map.addPolyline(rectOptions);
+        }
+        if (prefs.getString("pathHome", "").equals(""))
+        {
+            findViewById(R.id.tapToSetupHome).setVisibility(View.VISIBLE);
+            findViewById(R.id.mapCardHomeContainer).setVisibility(View.GONE);
+            findViewById(R.id.tapToSetupHome).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (prefs.getFloat("homelat", 0) != 0 && prefs.getFloat("homelng", 0) != 0 && prefs.getFloat("worklat", 0) != 0 && prefs.getFloat("worklng", 0) != 0) {
+                        Intent i = new Intent(MainActivity.this, ChoosePreferredRouteActivity.class);
+                        i.putExtra("home", true);
+                        startActivity(i);
+                    }
+                    else {
+                        Toast.makeText(MainActivity.this, "Please first enter home and work locations", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+        });
+        }
+        else {
+            findViewById(R.id.tapToSetupHome).setVisibility(View.GONE);
+            findViewById(R.id.mapCardHomeContainer).setVisibility(View.VISIBLE);
+            final MapFragment mapFragmentHome = (MapFragment) getFragmentManager().findFragmentById(R.id.mapCardHome);
+            final GoogleMap map = mapFragmentHome.getMap();
+            map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
+                    Intent i = new Intent(MainActivity.this, ChoosePreferredRouteActivity.class);
+                    i.putExtra("home", true);
+                    startActivity(i);
+                }
+            });
+            map.setMyLocationEnabled(false);
+            map.setOnMapLoadedCallback  (new GoogleMap.OnMapLoadedCallback() {
+                @Override
+                public void onMapLoaded() {
+                    float coor1 = prefs.getFloat("Homeswlat", 0);
+                    float coor2 = prefs.getFloat("Homeswlng", 0);
+                    float coor3 = prefs.getFloat("Homenelat", 0);
+                    float coor4 = prefs.getFloat("Homenelng", 0);
+
+                    map.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(new LatLng(coor1, coor2), new LatLng(coor3, coor4)), 100));
+                }
+            });
+            PolylineOptions rectOptions = new PolylineOptions();
+            rectOptions.color(getResources().getColor(android.R.color.holo_red_dark));
+            List<String> coordinates = Arrays.asList(prefs.getString("pathHome", "").split(";"));
+            for (int i = 0; i < coordinates.size(); i+=2)
+            {
+                rectOptions.add(new LatLng(Double.parseDouble(coordinates.get(i)), Double.parseDouble(coordinates.get(i+1))));
+            }
+            rectOptions.width(20);
+            map.addPolyline(rectOptions);
+        }
     }
 
     @Override
@@ -88,8 +210,9 @@ public class MainActivity extends Activity {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         ((TextView)findViewById(R.id.home_address)).setText("Home: " + prefs.getString("home_address", "unset"));
         ((TextView)findViewById(R.id.work_address)).setText("Work: " + prefs.getString("work_address", "unset"));
-        ((TextView)findViewById(R.id.preferred_route)).setText("Preferred Route to Work: " + prefs.getString("preferredRouteWork", "unset"));
-        ((TextView)findViewById(R.id.preferred_route_home)).setText("Preferred Route to Home: " + prefs.getString("preferredRouteHome", "unset"));
+        setupMaps();
+        //((TextView)findViewById(R.id.preferred_route)).setText("Preferred Route to Work: " + prefs.getString("preferredRouteWork", "unset"));
+        //((TextView)findViewById(R.id.preferred_route_home)).setText("Preferred Route to Home: " + prefs.getString("preferredRouteHome", "unset"));
 
 /*
        final Handler handler = new Handler(new Handler.Callback() {
