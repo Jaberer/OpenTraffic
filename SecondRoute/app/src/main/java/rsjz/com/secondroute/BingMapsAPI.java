@@ -13,7 +13,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by Ryan on 9/20/2014.
@@ -26,15 +28,16 @@ public class BingMapsAPI {
     private static final String API_KEY = "AmXC0roDXBSoAn6AUz9ScsUWbYrvoqCvjerGZ-Q4O1KxFfea9AHCi3cZ8Prl5aIM";
 
     public enum TRANSIT_MODE {driving, transit, walking}
-    public static ArrayList<String> getPreferredDirectionsList()
+    public static List<String> getPreferredDirectionsList(Context context)
     {
-        return null;
+        String route = PreferenceManager.getDefaultSharedPreferences(context).getString("preferredRoute", "");
+        return Arrays.asList(route.split("\n"));
     }
     public static ArrayList<String> getDirectionsList(Context context)
     {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        return BingMapsAPI.getListOfPossibleRoutes(prefs.getFloat("homelat", 0), prefs.getFloat("homelng", 0), prefs.getFloat("worklat", 0), prefs.getFloat("worklng", 0));
+        return BingMapsAPI.getDirectionsList(prefs.getFloat("homelat", 0), prefs.getFloat("homelng", 0), prefs.getFloat("worklat", 0), prefs.getFloat("worklng", 0));
 
     }
     public static ArrayList<String> getDirectionsList (float lat1, float lng1, float lat2, float lng2)
@@ -77,7 +80,11 @@ public class BingMapsAPI {
             for (int index = 0; index < itineraryItems.length(); index++)
             {
                 JSONObject itinerary = itineraryItems.getJSONObject(index);
-                directionList.add(itinerary.getJSONObject("instruction").getString("text"));
+                String instruction = itinerary.getJSONObject("instruction").getString("text");
+                if (!instruction.toLowerCase().startsWith("road name changes"))
+                {
+                    directionList.add(instruction);
+                }
             }
             return directionList;
 
@@ -85,6 +92,13 @@ public class BingMapsAPI {
             e.printStackTrace();
         }
         return null;
+    }
+    public static ArrayList<String> getListOfPossibleRoutes(Context context)
+    {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return BingMapsAPI.getListOfPossibleRoutes(prefs.getFloat("homelat", 0), prefs.getFloat("homelng", 0), prefs.getFloat("worklat", 0), prefs.getFloat("worklng", 0));
+
     }
     public static ArrayList<String> getListOfPossibleRoutes (float lat1, float lng1, float lat2, float lng2)
     {
@@ -123,16 +137,21 @@ public class BingMapsAPI {
             ArrayList<String> routesList = new ArrayList<String>();
             // Create a JSON object hierarchy from the results
             JSONObject jsonObj = new JSONObject(jsonResults.toString());
-            JSONArray resourcesArray = jsonObj.getJSONArray("reesourceSets").getJSONObject(0).getJSONArray("resources");
+            JSONArray resourcesArray = jsonObj.getJSONArray("resourceSets").getJSONObject(0).getJSONArray("resources");
             for (int resourceIndex = 0; resourceIndex < resourcesArray.length(); resourceIndex++) {
                 JSONObject resourceObj = resourcesArray.getJSONObject(resourceIndex);
                 JSONArray itineraryItems = resourceObj.getJSONArray("routeLegs").getJSONObject(0).getJSONArray("itineraryItems");
                 String route = "";
                 for (int index = 0; index < itineraryItems.length(); index++) {
                     JSONObject itinerary = itineraryItems.getJSONObject(index);
-                    route += itinerary.getJSONObject("instruction").getString("text") + "\n";
+                    String instruction = itinerary.getJSONObject("instruction").getString("text") + "\n";
+                    if (!instruction.toLowerCase().startsWith("road name changes"))
+                    {
+                        route += instruction;
+                    }
+
                 }
-                route = route.substring(0, route.length() - 2);
+                route = route.substring(0, route.length() - 1);
                 routesList.add(route);
             }
             return routesList;
