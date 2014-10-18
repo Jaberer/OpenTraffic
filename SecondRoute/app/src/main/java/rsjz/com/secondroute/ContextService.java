@@ -54,7 +54,11 @@ public class ContextService extends Service implements LocationListener
 
     private void startIntentService()
     {
-        Intent CompareRoutes = new Intent(this, BackgroundService.class);
+        if (currentLat != 0 && currentLng != 0) {
+            Intent compareResults = new Intent(this, BackgroundService.class);
+            compareResults.putExtra("lat", currentLat);
+            compareResults.putExtra("lng", currentLng);
+        }
     }
     public void onLocationChanged(Location location) {
         currentLat = (float) location.getLatitude();

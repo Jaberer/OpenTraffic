@@ -9,6 +9,9 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 
 public class FasterRouteActivity extends Activity {
@@ -18,6 +21,9 @@ public class FasterRouteActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_faster_route);
         speechRecognizer = new GoogleSpeechRecognizer(this);
+        String instruction = getIntent().getStringExtra("instruction");
+        instruction += " to save 5 min.";
+        ((TextView) findViewById(R.id.instruction)).setText(instruction);
         findViewById(R.id.yes).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

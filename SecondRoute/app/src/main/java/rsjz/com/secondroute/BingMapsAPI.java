@@ -28,17 +28,20 @@ public class BingMapsAPI {
     private static final String API_KEY = "AmXC0roDXBSoAn6AUz9ScsUWbYrvoqCvjerGZ-Q4O1KxFfea9AHCi3cZ8Prl5aIM";
 
     public enum TRANSIT_MODE {driving, transit, walking}
-    public static List<String> getPreferredDirectionsListHome(Context context)
+    public static List<String> getPreferredDirectionsList(Context context, boolean home)
     {
-        String route = PreferenceManager.getDefaultSharedPreferences(context).getString("preferredRoute", "");
+        String key = "preferredRoute";
+        if (home)
+        {
+            key += "home";
+        }
+        else {
+            key += "work";
+        }
+        String route = PreferenceManager.getDefaultSharedPreferences(context).getString(key, "");
         return Arrays.asList(route.split("\n"));
     }
-    public static List<String> getPreferredDirectionsListWork(Context context)
-    {
-        String route = PreferenceManager.getDefaultSharedPreferences(context).getString("preferredRoute", "");
-        return Arrays.asList(route.split("\n"));
-    }
-    public static ArrayList<String> getDirectionsList (float lat1, float lng1, float lat2, float lng2)
+    public static ArrayList<Route> getDirectionsList (float lat1, float lng1, float lat2, float lng2)
     {
         HttpURLConnection conn = null;
         StringBuilder jsonResults = new StringBuilder();
@@ -48,6 +51,8 @@ public class BingMapsAPI {
             sb.append("&key=" + API_KEY);
             sb.append("&wp.0=" + lat1 + "," + lng1);
             sb.append("&wp.1=" + lat2 + "," + lng2);
+            sb.append("&maxSolns=3");
+
             sb.append("&optmz=timeWithTraffic");
             sb.append("&rpo=none");
 
@@ -70,21 +75,40 @@ public class BingMapsAPI {
         }
 
         try {
-            ArrayList<String> directionList = new ArrayList<String>();
+            ArrayList<Route> routesList = new ArrayList<Route>();
             // Create a JSON object hierarchy from the results
             JSONObject jsonObj = new JSONObject(jsonResults.toString());
-            JSONObject resourceObj = jsonObj.getJSONArray("resourceSets").getJSONObject(0).getJSONArray("resources").getJSONObject(0);
-            JSONArray itineraryItems = resourceObj.getJSONArray("routeLegs").getJSONObject(0).getJSONArray("itineraryItems");
-            for (int index = 0; index < itineraryItems.length(); index++)
-            {
-                JSONObject itinerary = itineraryItems.getJSONObject(index);
-                String instruction = itinerary.getJSONObject("instruction").getString("text");
-                if (!instruction.toLowerCase().startsWith("road name changes"))
-                {
-                    directionList.add(instruction);
+            JSONArray resourcesArray = jsonObj.getJSONArray("resourceSets").getJSONObject(0).getJSONArray("resources");
+            for (int resourceIndex = 0; resourceIndex < resourcesArray.length(); resourceIndex++) {
+                JSONObject resourceObj = resourcesArray.getJSONObject(resourceIndex);
+                JSONArray itineraryItems = resourceObj.getJSONArray("routeLegs").getJSONObject(0).getJSONArray("itineraryItems");
+                ArrayList<String> instructionList = new ArrayList<String>();
+                for (int index = 0; index < itineraryItems.length(); index++) {
+                    JSONObject itinerary = itineraryItems.getJSONObject(index);
+                    String instruction = itinerary.getJSONObject("instruction").getString("text");
+                    if (!instruction.toLowerCase().startsWith("road name changes"))
+                    {
+                        instructionList.add(instruction);
+                    }
+
                 }
+                int duration = resourceObj.getInt("travelDurationTraffic");
+                String durationUnit = resourceObj.getString("durationUnit");
+                float divider = 1;
+                if (durationUnit.equals("Second")) {
+                    divider = 60;
+                } else if (durationUnit.equals("Hour")) {
+                    divider = 1 / 60;
+                } else if (durationUnit.equals("Day")) {
+                    divider = 1 / 60 / 24;
+                }
+                Route route = new Route();
+                route.durationMinutes = (int) Math.round((double) duration / divider);
+                route.instructions = instructionList;
+                routesList.add(route);
+
             }
-            return directionList;
+            return routesList;
 
         } catch (JSONException e) {
             e.printStackTrace();
