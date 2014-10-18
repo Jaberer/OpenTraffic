@@ -3,6 +3,7 @@ package rsjz.com.secondroute;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,6 +26,8 @@ public class GeofencingActivity extends FragmentActivity implements
         GooglePlayServicesClient.OnConnectionFailedListener,
         LocationClient.OnAddGeofencesResultListener
 {
+
+
 
         // Global constants
         /*
@@ -370,10 +373,29 @@ public class GeofencingActivity extends FragmentActivity implements
          * @param fieldName The field represented by the key
          * @return The full key name of a value in SharedPreferences
          */
-        private String getGeofenceFieldKey(String id, String fieldName) {
+        private String getGeofenceFieldKey(String id, String fieldName)
+        {
             return KEY_PREFIX + "_" + id + "_" + fieldName;
         }
     }
 
+    /*
+     * Create a PendingIntent that triggers an IntentService in your
+     * app when a geofence transition occurs.
+     */
+    private PendingIntent getTransitionPendingIntent()
+    {
+        // Create an explicit Intent
+        Intent intent = new Intent(this,
+                ReceiveTransitionsIntentService.xclass);
+        /*
+         * Return the PendingIntent
+         */
+        return PendingIntent.getService(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+    }
 
 }

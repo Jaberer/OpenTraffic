@@ -9,6 +9,9 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.LocationClient;
+
 
 /**
  * Handles Geofencing and running of BackgroundService
@@ -32,8 +35,20 @@ public class ContextService extends Service implements LocationListener
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(Intent intent, int flags, int startId)
+    {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+        int transitionType = LocationClient.getGeofenceTransition(intent);
+        // Test that a valid transition was reported
+        if ((transitionType == Geofence.GEOFENCE_TRANSITION_ENTER))
+        {
+            intent.pu
+        }
+        else
+        {
+            isHeadingHome = false;
+        }
 
         return super.onStartCommand(intent, flags, startId);
     }
