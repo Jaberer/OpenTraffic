@@ -30,7 +30,10 @@
         </activity>
         <activity
             android:name=".SetAddressActivity"
-            android:label="@string/title_activity_set_address" >
+            android:label="Set Address"  android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="rsjz.com.secondroute.MainActivity" />
         </activity>
 
         <meta-data
@@ -52,7 +55,7 @@
 
         <activity
             android:name=".ChoosePreferredRouteActivity"
-            android:label="@string/title_activity_choose_preferred_route"
+            android:label="Choose Preferred Route"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -60,7 +63,7 @@
         </activity>
         <activity
             android:name=".FasterRouteActivity"
-            android:label="@string/title_activity_faster_route" >
+            android:label="Faster Route" >
         </activity>
 
         <service

@@ -4,10 +4,12 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -19,7 +21,12 @@ import java.util.ArrayList;
  */
 public class BackgroundService extends IntentService
 {
-
+    Handler mHandler;
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mHandler = new Handler();
+    }
 
     public BackgroundService()
     {
@@ -36,10 +43,10 @@ public class BackgroundService extends IntentService
         if (!ContextService.isHeadingHome) //travelling to work
         {
             lat = prefs.getFloat("worklat", 0);
-            lng = prefs.getFloat("latlng", 0);
+            lng = prefs.getFloat("worklng", 0);
         }
         ArrayList<Route> pr = BingMapsAPI.getDirectionsList(intent.getFloatExtra("lat", 0), intent.getFloatExtra("lng",0), lat, lng);
-        ArrayList<String> cr = (ArrayList<String>) BingMapsAPI.getPreferredDirectionsList(this, ContextService.isHeadingHome);
+        List<String> cr = (List<String>) BingMapsAPI.getPreferredDirectionsList(this, ContextService.isHeadingHome);
         double maxConfidenceScore = 0;
         Route routeWithMaxConfidence = null;
         for (Route route : pr)
@@ -52,7 +59,7 @@ public class BackgroundService extends IntentService
             }
         }
         if (maxConfidenceScore > .9) { //need to find match with original route, but also the fastest route can't be the original
-            double similarityScore = compareRoutes(pr.get(0).instructions, cr);
+            final double similarityScore = compareRoutes(pr.get(0).instructions, cr);
             if (similarityScore < .9) {
                 Intent i = new Intent(this, FasterRouteActivity.class);
                 i.putExtra("instruction", pr.get(0).instructions.get(0));
@@ -60,17 +67,29 @@ public class BackgroundService extends IntentService
                 startActivity(i);
             }
             else {
-                Toast.makeText(this, "The fastest route was too similar to the preferred route. Max was .9 and similarity score was: " + similarityScore, Toast.LENGTH_LONG).show();
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        Toast.makeText(BackgroundService.this, "The fastest route was too similar to the preferred route. Max was .9 and similarity score was: " + similarityScore, Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         }
         else {
-            Toast.makeText(this, "No match was found with preferred route. Threshold was .9 and maximum confidence was: " + maxConfidenceScore, Toast.LENGTH_LONG).show();
+            final double mConfidence = maxConfidenceScore;
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(BackgroundService.this, "No match was found with preferred route. Threshold was .9 and maximum confidence was: " + mConfidence, Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 
 
 
-    private double compareRoutes(ArrayList<String> _pr, ArrayList<String> _cr)
+    private double compareRoutes(List<String> _pr, List<String> _cr)
     {
         double matchpercentage = 0.0;
         for(int i = 0; i < Math.min(_pr.size(), _pr.size()); i++) // i starts at 0, ends at smaller number
