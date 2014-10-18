@@ -12,6 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.location.LocationClient;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -58,7 +60,15 @@ public class MainActivity extends Activity {
         findViewById(R.id.test_exit_geofence).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO
+                Intent i = new Intent(MainActivity.this, ContextService.class);
+                startService(i);
+            }
+        });
+        findViewById(R.id.test_enter_geofence).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, ContextService.class);
+                stopService(i);
             }
         });
         findViewById(R.id.test_difference_traffic).setOnClickListener(new View.OnClickListener() {

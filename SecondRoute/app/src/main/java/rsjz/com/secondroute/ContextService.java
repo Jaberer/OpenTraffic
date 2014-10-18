@@ -8,6 +8,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationClient;
@@ -47,13 +48,26 @@ public class ContextService extends Service implements LocationListener
         // Test that a valid transition was reported
         if ((transitionType == Geofence.GEOFENCE_TRANSITION_ENTER))
         {
+            Toast.makeText(this, "Geofence entered. Stopping background service...", Toast.LENGTH_SHORT).show();
+
             stopActiveTracking();
+            stopSelf();
         }
         else // exited
         {
+            Toast.makeText(this, "Geofence exited. Active tracking started... acquiring gps signal...", Toast.LENGTH_SHORT).show();
+
             // Check direction
-            List<Geofence> triggerList = LocationClient.getTriggeringGeofences(intent);
             startActiveTracking();
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (location.hasAccuracy())
+            {
+                currentLat = (float) location.getLatitude();
+                currentLng = (float) location.getLongitude();
+                Toast.makeText(this, "location lock acquired. lat=" + currentLat + " lng=" + currentLng, Toast.LENGTH_SHORT).show();
+
+                startIntentService();
+            }
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -81,12 +95,16 @@ public class ContextService extends Service implements LocationListener
             Intent compareResults = new Intent(this, BackgroundService.class);
             compareResults.putExtra("lat", currentLat);
             compareResults.putExtra("lng", currentLng);
+            startService(compareResults);
         }
     }
+
     public void onLocationChanged(Location location)
     {
         currentLat = (float) location.getLatitude();
         currentLng = (float) location.getLongitude();
+        Toast.makeText(this, "location lock acquired. lat=" + currentLat + " lng=" + currentLng, Toast.LENGTH_SHORT).show();
+
         startIntentService();
     }
 
