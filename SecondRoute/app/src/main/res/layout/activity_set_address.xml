@@ -23,7 +23,8 @@
             android:layout_height="wrap_content"
             android:hint="Place name or address"
             android:id="@+id/location_input"
-            android:singleLine="true"/>
+            android:maxLines="3"
+            android:singleLine="false"/>
 
     </LinearLayout>
     <Button  android:id="@+id/set"
