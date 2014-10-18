@@ -64,6 +64,7 @@ public class BackgroundService extends IntentService
                 Intent i = new Intent(this, FasterRouteActivity.class);
                 i.putExtra("instruction", pr.get(0).instructions.get(0));
                 i.putExtra("differenceInTime", routeWithMaxConfidence.durationMinutes - pr.get(0).durationMinutes);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
             }
             else {
@@ -92,9 +93,9 @@ public class BackgroundService extends IntentService
     private double compareRoutes(List<String> _pr, List<String> _cr)
     {
         double matchpercentage = 0.0;
-        for(int i = 0; i < Math.min(_pr.size(), _pr.size()); i++) // i starts at 0, ends at smaller number
+        for(int i = 1; i <= Math.min(_pr.size(), _cr.size()) ; i++) // i starts at 0, ends at smaller number
         {
-            if(_pr.size() - i == _cr.size() - i)      // begins at end of list and minus i to iterate
+            if(_pr.get(_pr.size() - i).equals(_cr.get(_cr.size()-i))   )   // begins at end of list and minus i to iterate
             {
                 matchpercentage++;
             }

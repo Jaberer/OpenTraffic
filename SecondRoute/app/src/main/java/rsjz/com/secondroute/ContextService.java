@@ -41,6 +41,9 @@ public class ContextService extends Service implements LocationListener
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
+        currentLat = 0;
+        currentLng = 0;
+        lastRun = 0;
         isHeadingHome = !intent.getBooleanExtra("home", true); //exited home geofence
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
