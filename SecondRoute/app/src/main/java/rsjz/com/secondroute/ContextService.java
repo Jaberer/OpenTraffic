@@ -12,6 +12,8 @@ import android.os.IBinder;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationClient;
 
+import java.util.List;
+
 
 /**
  * Handles Geofencing and running of BackgroundService
@@ -25,11 +27,11 @@ public class ContextService extends Service implements LocationListener
     public ContextService()
     {
         super();
-
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
         stopActiveTracking();
         super.onDestroy();
     }
@@ -43,11 +45,23 @@ public class ContextService extends Service implements LocationListener
         // Test that a valid transition was reported
         if ((transitionType == Geofence.GEOFENCE_TRANSITION_ENTER))
         {
-            intent.pu
+            stopActiveTracking();
         }
-        else
+        else // exited
         {
-            isHeadingHome = false;
+            // Check direction
+            List<Geofence> triggerList = LocationClient.getTriggeringGeofences(intent);
+            String[] triggerIds = new String[triggerList.size()];
+            if(triggerIds[0].equals("Home"))
+            {
+                isHeadingHome = false; // check if geofence is "Home" or "Work"
+            }
+            else
+            {
+                isHeadingHome = true;
+            }
+            startIntentService();
+            startActiveTracking();
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -69,13 +83,15 @@ public class ContextService extends Service implements LocationListener
 
     private void startIntentService()
     {
-        if (currentLat != 0 && currentLng != 0) {
+        if (currentLat != 0 && currentLng != 0)
+        {
             Intent compareResults = new Intent(this, BackgroundService.class);
             compareResults.putExtra("lat", currentLat);
             compareResults.putExtra("lng", currentLng);
         }
     }
-    public void onLocationChanged(Location location) {
+    public void onLocationChanged(Location location)
+    {
         currentLat = (float) location.getLatitude();
         currentLng = (float) location.getLongitude();
     }
