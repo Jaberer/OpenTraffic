@@ -58,6 +58,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="rsjz.com.secondroute.MainActivity" />
         </activity>
+        <activity
+            android:name=".FasterRouteActivity"
+            android:label="@string/title_activity_faster_route" >
+        </activity>
     </application>
 
 </manifest>
