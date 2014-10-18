@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         ((TextView)findViewById(R.id.home_address)).setText("Home: " + prefs.getString("home_address", "unset"));
         ((TextView)findViewById(R.id.work_address)).setText("Work: " + prefs.getString("work_address", "unset"));
-        ((TextView)findViewById(R.id.work_address)).setText("Preferred Route: " + prefs.getString("preferredRoute", "unset"));
+        ((TextView)findViewById(R.id.preferred_route)).setText("Preferred Route: " + prefs.getString("preferredRoute", "unset"));
 
 /*
        final Handler handler = new Handler(new Handler.Callback() {
