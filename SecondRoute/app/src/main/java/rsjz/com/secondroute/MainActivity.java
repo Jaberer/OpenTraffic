@@ -39,6 +39,13 @@ public class MainActivity extends Activity {
                 startActivity(i);
             }
         });
+        findViewById(R.id.set_preferred_route).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, ChoosePreferredRouteActivity.class);
+                startActivity(i);
+            }
+        });
 
 
     }
@@ -49,7 +56,7 @@ public class MainActivity extends Activity {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         ((TextView)findViewById(R.id.home_address)).setText("Home: " + prefs.getString("home_address", "unset"));
         ((TextView)findViewById(R.id.work_address)).setText("Work: " + prefs.getString("work_address", "unset"));
-        /*
+
        final Handler handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message message) {
@@ -62,34 +69,15 @@ public class MainActivity extends Activity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ArrayList<String> directionsList = BingMapsAPI.getDirectionsList(prefs.getFloat("homelat", 0), prefs.getFloat("homelng", 0), prefs.getFloat("worklat", 0), prefs.getFloat("worklng", 0));
+                ArrayList<String> directionsList = BingMapsAPI.getListOfPossibleRoutes(prefs.getFloat("homelat", 0), prefs.getFloat("homelng", 0), prefs.getFloat("worklat", 0), prefs.getFloat("worklng", 0));
                 Message message = handler.obtainMessage();
                 message.obj = directionsList.toString();
                 handler.sendMessage(message);
 
             }
         }).start();
-        */
 
 
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }
