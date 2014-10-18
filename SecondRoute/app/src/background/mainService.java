@@ -1,21 +1,43 @@
-public class mainService extends IntentService
+import android.app.IntentService;
+import android.content.Intent;
+
+import java.util.ArrayList;
+
+/**
+ *
+ *
+ */
+public class MainService extends IntentService
 {
+    public ArrayList<String> cr; // get from Ryan's objects later
+    public ArrayList<String> pr;
+
+    
+
     @Override
-    protected void onHandleIntent(Intent workIntent)
+    protected void onHandleIntent(Intent workIntent) {
+
+    }
+
+    private double compareRoutes()
     {
-        /*
-         * Creates a new Intent to start IntentService.
-         * Gets Current Location
-         */
-        mServiceIntent = new Intent(getActivity(), RSSPullService.class);
-        mServiceIntent.setData(Uri.parse(dataUrl));
+        double matchpercentage = 0.0;
+        for(int i = 0; i < Math.min(pr.size, pr.size); i++) // i starts at 0, ends at smaller number
+        {
+            if(pr.size - i == cr.size - i)      // begins at end of list and minus i to iterate
+            {
+                matchpercentage++;
+            }
+            else
+            {
+                return matchpercentage / Math.min(pr.size, cr.size);
+            }
+        }
+        return matchpercentage / Math.min(pr.size, cr.size);
+    }
 
-        // Gets data from the incoming Intent
-
-
-        String dataString = workIntent.getDataString();
-        ...
-        // Do work here, based on the contents of dataString
-        ...
+    private void stopIntent()
+    {
+        stopIntent();
     }
 }
