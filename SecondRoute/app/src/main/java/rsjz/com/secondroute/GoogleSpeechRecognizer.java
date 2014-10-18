@@ -201,7 +201,7 @@ public class GoogleSpeechRecognizer implements RecognitionListener {
     }
 
     private void receiveWhatWasHeard(List<String> heard) {
-
+        boolean wordFound = false;
         // find the target word
         for (String possible : heard) {
             Intent intent = new Intent("speech-return");
@@ -212,16 +212,23 @@ public class GoogleSpeechRecognizer implements RecognitionListener {
                 intent.putExtra("yes", true);
                 LocalBroadcastManager.getInstance(speechService).sendBroadcast(intent);
                 speechService.stopSelf();
+                wordFound = true;
             }
             else if (possible.toLowerCase().contains("no"))
             {
                 intent.putExtra("yes", false);
                 LocalBroadcastManager.getInstance(speechService).sendBroadcast(intent);
                 speechService.stopSelf();
+                wordFound = true;
             }
 
         }
-        startListening();
+        if (!wordFound)
+        {
+            startListening();
+        }
+
+
 
     }
 
