@@ -58,27 +58,27 @@
       <sourceFolder url="file://$MODULE_DIR$/../../../YTime/SecondRoute/app/src/androidTest/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../../YTime/SecondRoute/app/src/androidTest/rs" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/libs" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
       <excludeFolder url="file://$MODULE_DIR$/../../../YTime/SecondRoute/app/build/intermediates/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/../../../YTime/SecondRoute/app/build/intermediates/classes" />
       <excludeFolder url="file://$MODULE_DIR$/../../../YTime/SecondRoute/app/build/intermediates/coverage-instrumented-classes" />
       <excludeFolder url="file://$MODULE_DIR$/../../../YTime/SecondRoute/app/build/intermediates/dependency-cache" />
       <excludeFolder url="file://$MODULE_DIR$/../../../YTime/SecondRoute/app/build/intermediates/dex" />
       <excludeFolder url="file://$MODULE_DIR$/../../../YTime/SecondRoute/app/build/intermediates/dex-cache" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/../../../YTime/SecondRoute/app/build/intermediates/jacoco" />
       <excludeFolder url="file://$MODULE_DIR$/../../../YTime/SecondRoute/app/build/intermediates/javaResources" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/libs" />
       <excludeFolder url="file://$MODULE_DIR$/../../../YTime/SecondRoute/app/build/intermediates/lint" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
       <excludeFolder url="file://$MODULE_DIR$/../../../YTime/SecondRoute/app/build/intermediates/ndk" />
       <excludeFolder url="file://$MODULE_DIR$/../../../YTime/SecondRoute/app/build/intermediates/pre-dexed" />
       <excludeFolder url="file://$MODULE_DIR$/../../../YTime/SecondRoute/app/build/intermediates/proguard" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
       <excludeFolder url="file://$MODULE_DIR$/../../../YTime/SecondRoute/app/build/outputs" />
     </content>
-    <orderEntry type="jdk" jdkName="Android API 21 Platform" jdkType="Android SDK" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
