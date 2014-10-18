@@ -19,6 +19,7 @@ import android.preference.PreferenceManager;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.support.v4.content.LocalBroadcastManager;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -38,7 +39,6 @@ public class GoogleSpeechRecognizer implements RecognitionListener {
     public static float lastVolume = 0;
     public static String lastHeard;
     static int BEEP_STREAM = AudioManager.STREAM_SYSTEM;
-    private static boolean optimizeEnglish = true;
     private static boolean isMuted = false;
     protected final Messenger mServerMessenger = new Messenger(
             new IncomingHandler(this));
@@ -48,7 +48,7 @@ public class GoogleSpeechRecognizer implements RecognitionListener {
     // in jelly bean if there is no speech for an extended period of time it
     // will shut off
     // thus we need something to restart speech recognizer after prolonged time
-    FasterRouteActivity fasterRouteActivity;
+    SpeechService speechService;
     protected CountDownTimer mNoSpeechCountDown = new CountDownTimer(5000, 5000) {
 
         @Override
@@ -74,34 +74,37 @@ public class GoogleSpeechRecognizer implements RecognitionListener {
     protected SpeechRecognizer mSpeechRecognizer;
     // Audio Manager
     protected AudioManager mAudioManager;
-    private Context context;
     private boolean listeningPaused = false;
-    private List<String> hotwords = new ArrayList<String>();
-    private int hotwordCount = 0;
-
     // private static int lastVolume = 1;
     public GoogleSpeechRecognizer(Context context) {
-        fasterRouteActivity = (FasterRouteActivity) context;
+        speechService = (SpeechService) context;
+        try {
+            PackageInfo pInfo = context.getPackageManager().getPackageInfo("com.google.android.googlequicksearchbox", 0);
+            if (pInfo.versionCode >= 300302160) {
+                BEEP_STREAM = AudioManager.STREAM_MUSIC;
+            }
+        } catch (NameNotFoundException e) {
+        }
         initialize();
     }
 
     private void initialize() {
 
         SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(context);
+                .getDefaultSharedPreferences(speechService);
 
 
-        mAudioManager = (AudioManager) context
+        mAudioManager = (AudioManager) speechService
                 .getSystemService(Context.AUDIO_SERVICE);
         mSpeechRecognizerIntent = new Intent(
                 RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         mSpeechRecognizerIntent.putExtra(
-                RecognizerIntent.EXTRA_CALLING_PACKAGE, context
+                RecognizerIntent.EXTRA_CALLING_PACKAGE, speechService
                         .getApplicationContext().getPackageName()
         );
         mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
-        mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(context);
+        mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(speechService);
         mSpeechRecognizer.setRecognitionListener(this);
         listenForHotword();
     }
@@ -201,14 +204,22 @@ public class GoogleSpeechRecognizer implements RecognitionListener {
 
         // find the target word
         for (String possible : heard) {
+            Intent intent = new Intent("speech-return");
+            // You can also include some extra data.
+
             if (possible.toLowerCase().contains("yes"))
             {
-                fasterRouteActivity.navigate();
+                intent.putExtra("yes", true);
+                LocalBroadcastManager.getInstance(speechService).sendBroadcast(intent);
+                speechService.stopSelf();
             }
             else if (possible.toLowerCase().contains("no"))
             {
-                fasterRouteActivity.finish();
+                intent.putExtra("yes", false);
+                LocalBroadcastManager.getInstance(speechService).sendBroadcast(intent);
+                speechService.stopSelf();
             }
+
         }
         startListening();
 

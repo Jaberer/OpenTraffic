@@ -34,14 +34,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 
 
 public class SetAddressActivity extends Activity implements
         GooglePlayServicesClient.ConnectionCallbacks,
         com.google.android.gms.location.LocationListener,
         GooglePlayServicesClient.OnConnectionFailedListener,
-        LocationClient.OnAddGeofencesResultListener {
+        LocationClient.OnAddGeofencesResultListener, LocationClient.OnRemoveGeofencesResultListener, GoogleMap.OnMapClickListener {
     boolean home;
     LocationClient mLocationClient;
     GoogleMap map;
@@ -49,7 +51,6 @@ public class SetAddressActivity extends Activity implements
     double lng = 0;
     String placeName;
     boolean followUser;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -70,6 +71,7 @@ public class SetAddressActivity extends Activity implements
 
             map = mapFragment.getMap();
             map.setTrafficEnabled(true);
+            map.setOnMapClickListener(this);
             map.setMyLocationEnabled(true);
 
 
@@ -79,42 +81,31 @@ public class SetAddressActivity extends Activity implements
                 @Override
                 public void onClick(View view) {
 
-
-                    /*
-                    final Handler handler = new Handler(new Handler.Callback() {
-                        @Override
-                        public boolean handleMessage(Message message) {
-                            Toast.makeText(CreateAlarmActivity.this, "Estimated time to location: " + message.obj.toString(), Toast.LENGTH_LONG).show();
-
-                            return true;
-                        }
-                    });
-                    */
-
-                    Thread thread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SetAddressActivity.this);
-                            if (home)
-                            {
-                                prefs.edit().putFloat("homelat", (float) lat)
-                                        .putFloat("homelng", (float) lng)
-                                        .putString("home_address", placeName).commit();
-
-                            }
-                            else {
-                                prefs.edit().putFloat("worklat", (float) lat)
-                                        .putFloat("worklng", (float) lng)
-                                        .putString("work_address", placeName).commit();
-                            }
-                            finish();
-                        }
-                    });
                     if (placeName == null || placeName.length() < 1) {
                         Toast.makeText(SetAddressActivity.this, "Please enter a location...", Toast.LENGTH_LONG).show();
                     } else {
-                        thread.start();
-                        
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SetAddressActivity.this);
+                        if (home)
+                        {
+                            prefs.edit().putFloat("homelat", (float) lat)
+                                    .putFloat("homelng", (float) lng)
+                                    .putString("home_address", placeName).commit();
+
+                        }
+                        else {
+                            prefs.edit().putFloat("worklat", (float) lat)
+                                    .putFloat("worklng", (float) lng)
+                                    .putString("work_address", placeName).commit();
+                        }
+                        String key = "home";
+                        if (!home)
+                        {
+                            key = "work";
+                        }
+                        mLocationClient.removeGeofences(Collections.singletonList(key), SetAddressActivity.this);
+                        // Send a request to add the current geofences
+
+
                     }
                 }
             });
@@ -249,7 +240,46 @@ public class SetAddressActivity extends Activity implements
     @Override
     public void onAddGeofencesResult(int i, String[] strings)
     {
+        finish();
         // Completed Added Geofencing
+    }
+
+    @Override
+    public void onRemoveGeofencesByRequestIdsResult(int i3, String[] strings) {
+        ArrayList<Geofence> geofences = new ArrayList<Geofence>();
+        String key = "home";
+        if (!home)
+        {
+            key = "work";
+        }
+
+        geofences.add(new SimpleGeofence(key, lat, lng, Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT).toGeofence());
+
+        Intent i = new Intent(SetAddressActivity.this, ContextService.class);
+        i.putExtra("home", home);
+        PendingIntent intent = PendingIntent.getService(SetAddressActivity.this, 0, i, 0);
+
+        mLocationClient.addGeofences(
+                geofences, intent, SetAddressActivity.this);
+    }
+
+    @Override
+    public void onRemoveGeofencesByPendingIntentResult(int i, PendingIntent pendingIntent) {
+
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        lat = latLng.latitude;
+        lng = latLng.longitude;
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+        map.clear();
+        MarkerOptions options = new MarkerOptions();
+        options.position(latLng);
+        placeName = lat + ", " + lng;
+        map.addMarker(options);
+        final AutoCompleteTextView autoCompView = (AutoCompleteTextView) findViewById(R.id.location_input);
+        autoCompView.setText(placeName);
     }
 
     /**
@@ -269,23 +299,19 @@ public class SetAddressActivity extends Activity implements
          * @param geofenceId The Geofence's request ID
          * @param latitude Latitude of the Geofence's center.
          * @param longitude Longitude of the Geofence's center.
-         * @param radius Radius of the geofence circle.
-         * @param expiration Geofence expiration duration
          * @param transition Type of Geofence transition.
          */
         public SimpleGeofence(
                 String geofenceId,
                 double latitude,
                 double longitude,
-                float radius,
-                long expiration,
                 int transition) {
             // Set the instance fields from the constructor
             this.mId = geofenceId;
             this.mLatitude = latitude;
             this.mLongitude = longitude;
-            this.mRadius = radius;
-            this.mExpirationDuration = expiration;
+            this.mRadius = 500;
+            this.mExpirationDuration = Geofence.NEVER_EXPIRE;
             this.mTransitionType = transition;
         }
         // Instance field getters

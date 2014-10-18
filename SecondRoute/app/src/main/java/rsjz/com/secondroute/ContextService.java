@@ -24,6 +24,7 @@ public class ContextService extends Service implements LocationListener
     LocationManager locationManager;
     float currentLat = 0;
     float currentLng = 0;
+    long lastRun = 0;
     public ContextService()
     {
         super();
@@ -39,6 +40,7 @@ public class ContextService extends Service implements LocationListener
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
+        isHeadingHome = !intent.getBooleanExtra("home", true); //exited home geofence
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         int transitionType = LocationClient.getGeofenceTransition(intent);
@@ -51,16 +53,6 @@ public class ContextService extends Service implements LocationListener
         {
             // Check direction
             List<Geofence> triggerList = LocationClient.getTriggeringGeofences(intent);
-            String[] triggerIds = new String[triggerList.size()];
-            if(triggerIds[0].equals("Home"))
-            {
-                isHeadingHome = false; // check if geofence is "Home" or "Work"
-            }
-            else
-            {
-                isHeadingHome = true;
-            }
-            startIntentService();
             startActiveTracking();
         }
 
@@ -83,8 +75,9 @@ public class ContextService extends Service implements LocationListener
 
     private void startIntentService()
     {
-        if (currentLat != 0 && currentLng != 0)
+        if (currentLat != 0 && currentLng != 0 && System.currentTimeMillis() - lastRun > 60000)
         {
+            lastRun = System.currentTimeMillis();
             Intent compareResults = new Intent(this, BackgroundService.class);
             compareResults.putExtra("lat", currentLat);
             compareResults.putExtra("lng", currentLng);
@@ -94,6 +87,7 @@ public class ContextService extends Service implements LocationListener
     {
         currentLat = (float) location.getLatitude();
         currentLng = (float) location.getLongitude();
+        startIntentService();
     }
 
     public void onStatusChanged(String provider, int status, Bundle extras) {}
