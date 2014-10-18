@@ -9,6 +9,8 @@ import android.os.IBinder;
  */
 public class ContextService extends Service
 {
+    public static boolean direction;
+
     public ContextService()
     {
         super();
