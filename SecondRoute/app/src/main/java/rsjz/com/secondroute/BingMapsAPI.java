@@ -37,7 +37,7 @@ public class BingMapsAPI {
     {
         String route = PreferenceManager.getDefaultSharedPreferences(context).getString("preferredRoute", "");
         return Arrays.asList(route.split("\n"));
-    }=
+    }
     public static ArrayList<String> getDirectionsList (float lat1, float lng1, float lat2, float lng2)
     {
         HttpURLConnection conn = null;
