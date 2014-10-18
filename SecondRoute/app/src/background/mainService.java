@@ -12,7 +12,7 @@ public class MainService extends IntentService
     public ArrayList<String> cr; // get from Ryan's objects later
     public ArrayList<String> pr;
 
-    
+
 
     @Override
     protected void onHandleIntent(Intent workIntent) {
