@@ -17,7 +17,6 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         findViewById(R.id.set_home).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -35,9 +34,17 @@ public class MainActivity extends Activity {
                 startActivity(i);
             }
         });
-        ((TextView)findViewById(R.id.home_address)).setText("Home Address: " + prefs.getString());
+
+
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        ((TextView)findViewById(R.id.home_address)).setText("Home: " + prefs.getString("home_address", "unset"));
+        ((TextView)findViewById(R.id.work_address)).setText("Work: " + prefs.getString("work_address", "unset"));
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
