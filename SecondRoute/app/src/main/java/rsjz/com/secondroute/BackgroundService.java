@@ -28,7 +28,7 @@ public class BackgroundService extends IntentService
     {
         //perform all code here
         ArrayList<String> pr = BingMapsAPI.getDirectionsList(this);
-        ArrayList<String> cr = BingMapsAPI.getPreferredDirectionsList();
+        ArrayList<String> cr = (ArrayList<String>) BingMapsAPI.getPreferredDirectionsList(this);
         compareRoutes(pr, cr);      // later do voice here
     }
 
