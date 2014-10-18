@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -51,12 +52,19 @@ public class BackgroundService extends IntentService
             }
         }
         if (maxConfidenceScore > .9) { //need to find match with original route, but also the fastest route can't be the original
-            if (compareRoutes(pr.get(0).instructions, cr) < .9) {
+            double similarityScore = compareRoutes(pr.get(0).instructions, cr);
+            if (similarityScore < .9) {
                 Intent i = new Intent(this, FasterRouteActivity.class);
                 i.putExtra("instruction", pr.get(0).instructions.get(0));
                 i.putExtra("differenceInTime", routeWithMaxConfidence.durationMinutes - pr.get(0).durationMinutes);
                 startActivity(i);
             }
+            else {
+                Toast.makeText(this, "The fastest route was too similar to the preferred route. Max was .9 and similarity score was: " + similarityScore, Toast.LENGTH_LONG).show();
+            }
+        }
+        else {
+            Toast.makeText(this, "No match was found with preferred route. Threshold was .9 and maximum confidence was: " + maxConfidenceScore, Toast.LENGTH_LONG).show();
         }
     }
 

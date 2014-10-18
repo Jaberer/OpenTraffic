@@ -54,5 +54,15 @@
                 android:id="@+id/set_preferred_route_home"
                 android:text="Set Preferred Route to Home"
                 android:layout_height="wrap_content" />
+            <Button
+                android:layout_width="match_parent"
+                android:id="@+id/test_exit_geofence"
+                android:text="Test: Exit Geofence"
+                android:layout_height="wrap_content" />
+            <Button
+                android:layout_width="match_parent"
+                android:id="@+id/test_difference_traffic"
+                android:text="Test: Difference in Traffic Found"
+                android:layout_height="wrap_content" />
         </LinearLayout>
 </ScrollView>

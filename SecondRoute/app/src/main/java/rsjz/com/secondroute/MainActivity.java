@@ -55,7 +55,21 @@ public class MainActivity extends Activity {
                 startActivity(i);
             }
         });
-
+        findViewById(R.id.test_exit_geofence).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO
+            }
+        });
+        findViewById(R.id.test_difference_traffic).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, FasterRouteActivity.class);
+                i.putExtra("instruction", "Turn right onto the ramp of I-5");
+                i.putExtra("differenceInTime", 12);
+                startActivity(i);
+            }
+        });
     }
 
     @Override
