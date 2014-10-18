@@ -57,14 +57,21 @@ public class SetAddressActivity extends Activity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_address);
         home = getIntent().getBooleanExtra("home", true);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (home)
         {
-            placeName = PreferenceManager.getDefaultSharedPreferences(this).getString("home_address", "");
+            placeName = prefs.getString("home_address", "");
+            lat = prefs.getFloat("homelat", 0);
+            lng = prefs.getFloat("homelng", 0);
         }
         else
         {
-            placeName = PreferenceManager.getDefaultSharedPreferences(this).getString("work_address", "");
+            placeName = prefs.getString("work_address", "");
+            lat = prefs.getFloat("worklat", 0);
+            lng = prefs.getFloat("worklng", 0);
         }
+        final AutoCompleteTextView autoCompView = (AutoCompleteTextView) findViewById(R.id.location_input);
+        autoCompView.setText(placeName);
         if (GoogleMapsAPI.servicesConnected(this))
         {
             MapFragment mapFragment = ((MapFragment) getFragmentManager().findFragmentById(R.id.map));
@@ -81,7 +88,7 @@ public class SetAddressActivity extends Activity implements
                 @Override
                 public void onClick(View view) {
 
-                    if (placeName == null || placeName.length() < 1) {
+                    if (placeName == null || placeName.length() < 1 || lat == 0 || lng == 0) {
                         Toast.makeText(SetAddressActivity.this, "Please enter a location...", Toast.LENGTH_LONG).show();
                     } else {
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SetAddressActivity.this);
@@ -137,8 +144,13 @@ public class SetAddressActivity extends Activity implements
     {
         Location location = mLocationClient.getLastLocation();
         mLocationClient.requestLocationUpdates(LocationRequest.create().setExpirationDuration(3000), this);
-        map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+        if (lat == 0 || lng == 0) {
+            map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+        }
+        else {
+            map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat, lng)));
 
+        }
         // Zoom in the Google Map
         map.animateCamera(CameraUpdateFactory.zoomTo(12));
 
