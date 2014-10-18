@@ -20,15 +20,25 @@ import java.util.ArrayList;
 
 public class ChoosePreferredRouteActivity extends Activity {
     ArrayList<String> routes;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_preferred_route);
+        final boolean home = getIntent().getBooleanExtra("home", true);
         findViewById(R.id.set).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int selectedRoute = ((RadioGroup) findViewById(R.id.layout)).getCheckedRadioButtonId();
-                PreferenceManager.getDefaultSharedPreferences(ChoosePreferredRouteActivity.this).edit().putString("preferredRoute", routes.get(selectedRoute)).commit();
+                String key = "preferredRoute";
+                if (home)
+                {
+                    key += "Home";
+                }
+                else {
+                    key += "Work";
+                }
+                PreferenceManager.getDefaultSharedPreferences(ChoosePreferredRouteActivity.this).edit().putString(key, routes.get(selectedRoute)).commit();
                 finish();
             }
         });
@@ -54,7 +64,7 @@ public class ChoosePreferredRouteActivity extends Activity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                routes = BingMapsAPI.getListOfPossibleRoutes(ChoosePreferredRouteActivity.this);
+                routes = BingMapsAPI.getListOfPossibleRoutes(ChoosePreferredRouteActivity.this, home);
 
                 handler.sendEmptyMessage(0);
             }

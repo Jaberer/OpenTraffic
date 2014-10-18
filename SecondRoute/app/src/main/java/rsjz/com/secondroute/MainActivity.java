@@ -43,10 +43,18 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(MainActivity.this, ChoosePreferredRouteActivity.class);
+                i.putExtra("home", false);
                 startActivity(i);
             }
         });
-
+        findViewById(R.id.set_preferred_route_home).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, ChoosePreferredRouteActivity.class);
+                i.putExtra("home", true);
+                startActivity(i);
+            }
+        });
 
     }
 
@@ -56,7 +64,8 @@ public class MainActivity extends Activity {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         ((TextView)findViewById(R.id.home_address)).setText("Home: " + prefs.getString("home_address", "unset"));
         ((TextView)findViewById(R.id.work_address)).setText("Work: " + prefs.getString("work_address", "unset"));
-        ((TextView)findViewById(R.id.preferred_route)).setText("Preferred Route: " + prefs.getString("preferredRoute", "unset"));
+        ((TextView)findViewById(R.id.preferred_route)).setText("Preferred Route to Work: " + prefs.getString("preferredRouteWork", "unset"));
+        ((TextView)findViewById(R.id.preferred_route_home)).setText("Preferred Route to Home: " + prefs.getString("preferredRouteHome", "unset"));
 
 /*
        final Handler handler = new Handler(new Handler.Callback() {

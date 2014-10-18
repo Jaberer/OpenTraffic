@@ -33,10 +33,10 @@ public class BingMapsAPI {
         String key = "preferredRoute";
         if (home)
         {
-            key += "home";
+            key += "Home";
         }
         else {
-            key += "work";
+            key += "Work";
         }
         String route = PreferenceManager.getDefaultSharedPreferences(context).getString(key, "");
         return Arrays.asList(route.split("\n"));
@@ -115,11 +115,16 @@ public class BingMapsAPI {
         }
         return null;
     }
-    public static ArrayList<String> getListOfPossibleRoutes(Context context)
+    public static ArrayList<String> getListOfPossibleRoutes(Context context, boolean home)
     {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-        return BingMapsAPI.getListOfPossibleRoutes(prefs.getFloat("homelat", 0), prefs.getFloat("homelng", 0), prefs.getFloat("worklat", 0), prefs.getFloat("worklng", 0));
+        if (home)
+        {
+            return BingMapsAPI.getListOfPossibleRoutes(prefs.getFloat("worklat", 0), prefs.getFloat("worklng", 0), prefs.getFloat("homelat", 0), prefs.getFloat("homelng", 0));
+        }
+        else {
+            return BingMapsAPI.getListOfPossibleRoutes(prefs.getFloat("homelat", 0), prefs.getFloat("homelng", 0), prefs.getFloat("worklat", 0), prefs.getFloat("worklng", 0));
+        }
 
     }
     public static ArrayList<String> getListOfPossibleRoutes (float lat1, float lng1, float lat2, float lng2)

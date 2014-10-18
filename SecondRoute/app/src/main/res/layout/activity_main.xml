@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,38 +6,53 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
+
     tools:context=".MainActivity">
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/home_address"
-        android:text="Home Address:"/>
-    <Button
-        android:layout_width="match_parent"
-        android:text="Set Home Address"
-        android:id="@+id/set_home"
-        android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/home_address"
+                android:text="Home Address:"/>
+            <Button
+                android:layout_width="match_parent"
+                android:text="Set Home Address"
+                android:id="@+id/set_home"
+                android:layout_height="wrap_content" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/work_address"
-        android:text="Work Address:"/>
-    <Button
-        android:layout_width="match_parent"
-        android:id="@+id/set_work"
-        android:text="Set Work Address"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/preferred_route"
-        android:text="Preferred Route: "/>
-    <Button
-        android:layout_width="match_parent"
-        android:id="@+id/set_preferred_route"
-        android:text="Set Preferred Route"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/work_address"
+                android:text="Work Address:"/>
+            <Button
+                android:layout_width="match_parent"
+                android:id="@+id/set_work"
+                android:text="Set Work Address"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/preferred_route"
+                android:text="Preferred Route to Work: "/>
+            <Button
+                android:layout_width="match_parent"
+                android:id="@+id/set_preferred_route"
+                android:text="Set Preferred Route to Work"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/preferred_route_home"
+                android:text="Preferred Route to Home: "/>
+            <Button
+                android:layout_width="match_parent"
+                android:id="@+id/set_preferred_route_home"
+                android:text="Set Preferred Route to Home"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+</ScrollView>
