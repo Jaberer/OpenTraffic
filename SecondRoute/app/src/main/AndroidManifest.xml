@@ -49,6 +49,15 @@
             android:name=".BackgroundService"
             android:exported="false" >
         </service>
+
+        <activity
+            android:name=".ChoosePreferredRouteActivity"
+            android:label="@string/title_activity_choose_preferred_route"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="rsjz.com.secondroute.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

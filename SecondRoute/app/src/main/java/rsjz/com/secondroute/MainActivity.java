@@ -4,11 +4,16 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class MainActivity extends Activity {
@@ -44,6 +49,29 @@ public class MainActivity extends Activity {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         ((TextView)findViewById(R.id.home_address)).setText("Home: " + prefs.getString("home_address", "unset"));
         ((TextView)findViewById(R.id.work_address)).setText("Work: " + prefs.getString("work_address", "unset"));
+        /*
+       final Handler handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message message) {
+                ((TextView)findViewById(R.id.home_address)).setText((String) message.obj);
+
+                return true;
+            }
+        });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<String> directionsList = BingMapsAPI.getDirectionsList(prefs.getFloat("homelat", 0), prefs.getFloat("homelng", 0), prefs.getFloat("worklat", 0), prefs.getFloat("worklng", 0));
+                Message message = handler.obtainMessage();
+                message.obj = directionsList.toString();
+                handler.sendMessage(message);
+
+            }
+        }).start();
+        */
+
+
     }
 
     @Override
