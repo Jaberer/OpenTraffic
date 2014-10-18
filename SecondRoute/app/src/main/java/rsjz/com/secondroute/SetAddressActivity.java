@@ -149,7 +149,9 @@ public class SetAddressActivity extends Activity implements
         }
         else {
             map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat, lng)));
-
+            MarkerOptions options = new MarkerOptions();
+            options.position(new LatLng(lat, lng));
+            map.addMarker(options);
         }
         // Zoom in the Google Map
         map.animateCamera(CameraUpdateFactory.zoomTo(12));
