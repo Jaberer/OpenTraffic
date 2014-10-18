@@ -52,12 +52,6 @@ public class GeofenceManager
         Work = WorkBuilder.build();
     }
 
-
-    public boolean checkExit()
-    {
-        Home.
-    }
-
     public void modifyHomeGeofence()
     {
         removeGeofences(List<String>, LocationClient.OnRemoveGeofencesResultListener)
