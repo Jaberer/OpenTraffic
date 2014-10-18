@@ -36,7 +36,7 @@ public class FasterRouteActivity extends Activity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         float lat = prefs.getFloat("homelat", 0);
         float lng = prefs.getFloat("homelng", 0);
-        if (false) //travelling to work
+        if (!ContextService.isHeadingHome) //travelling to work
         {
             lat = prefs.getFloat("worklat", 0);
             lng = prefs.getFloat("latlng", 0);
