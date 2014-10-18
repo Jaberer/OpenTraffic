@@ -28,18 +28,16 @@ public class BingMapsAPI {
     private static final String API_KEY = "AmXC0roDXBSoAn6AUz9ScsUWbYrvoqCvjerGZ-Q4O1KxFfea9AHCi3cZ8Prl5aIM";
 
     public enum TRANSIT_MODE {driving, transit, walking}
-    public static List<String> getPreferredDirectionsList(Context context)
+    public static List<String> getPreferredDirectionsListHome(Context context)
     {
         String route = PreferenceManager.getDefaultSharedPreferences(context).getString("preferredRoute", "");
         return Arrays.asList(route.split("\n"));
     }
-    public static ArrayList<String> getDirectionsList(Context context)
+    public static List<String> getPreferredDirectionsListWork(Context context)
     {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-        return BingMapsAPI.getDirectionsList(prefs.getFloat("homelat", 0), prefs.getFloat("homelng", 0), prefs.getFloat("worklat", 0), prefs.getFloat("worklng", 0));
-
-    }
+        String route = PreferenceManager.getDefaultSharedPreferences(context).getString("preferredRoute", "");
+        return Arrays.asList(route.split("\n"));
+    }=
     public static ArrayList<String> getDirectionsList (float lat1, float lng1, float lat2, float lng2)
     {
         HttpURLConnection conn = null;
