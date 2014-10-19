@@ -58,7 +58,7 @@ public class BackgroundService extends IntentService
                 routeWithMaxConfidence = route;
             }
         }
-        if (maxConfidenceScore > .9) { //need to find match with original route, but also the fastest route can't be the original
+        if (maxConfidenceScore > .8) { //need to find match with original route, but also the fastest route can't be the original
             final double similarityScore = compareRoutes(pr.get(0).instructions, cr);
             if (similarityScore < .9) {
                 Intent i = new Intent(this, FasterRouteActivity.class);

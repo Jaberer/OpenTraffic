@@ -41,12 +41,16 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
+        android:textColor="@android:color/white"
+
         android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:text="Yes"
+        android:textColor="@android:color/white"
+
         android:id="@+id/yes"
         android:layout_above="@+id/no"
         android:layout_marginBottom="10dp"

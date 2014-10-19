@@ -36,7 +36,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.set_home).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.home_layout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(MainActivity.this, SetAddressActivity.class);
@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
 
             }
         });
-        findViewById(R.id.set_work).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.work_layout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(MainActivity.this, SetAddressActivity.class);
@@ -77,19 +77,6 @@ public class MainActivity extends Activity {
                 startActivity(i);
             }
         });
-        ((WorkaroundMapFragment) getFragmentManager().findFragmentById(R.id.mapCardWork)).setListener(new WorkaroundMapFragment.OnTouchListener() {
-            @Override
-            public void onTouch() {
-                ((ScrollView)findViewById(R.id.scrollView)).requestDisallowInterceptTouchEvent(true);
-            }
-        });
-        ((WorkaroundMapFragment) getFragmentManager().findFragmentById(R.id.mapCardHome)).setListener(new WorkaroundMapFragment.OnTouchListener() {
-            @Override
-            public void onTouch() {
-                ((ScrollView)findViewById(R.id.scrollView)).requestDisallowInterceptTouchEvent(true);
-            }
-        });
-
     }
 
     private void setupMaps() {
@@ -118,6 +105,7 @@ public class MainActivity extends Activity {
             final MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapCardWork);
 
             final GoogleMap map = mapFragment.getMap();
+            map.clear();
             map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng latLng) {
@@ -127,6 +115,8 @@ public class MainActivity extends Activity {
                 }
             });
             map.setMyLocationEnabled(false);
+            map.getUiSettings().setAllGesturesEnabled(false);
+            map.getUiSettings().setZoomControlsEnabled(false);
             map.setOnMapLoadedCallback  (new GoogleMap.OnMapLoadedCallback() {
                 @Override
                 public void onMapLoaded() {
@@ -135,7 +125,7 @@ public class MainActivity extends Activity {
                     float coor3 = prefs.getFloat("Worknelat", 0);
                     float coor4 = prefs.getFloat("Worknelng", 0);
 
-                    map.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(new LatLng(coor1, coor2), new LatLng(coor3, coor4)), 100));
+                    map.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(new LatLng(coor1, coor2), new LatLng(coor3, coor4)), 50));
                 }
             });
             PolylineOptions rectOptions = new PolylineOptions();
@@ -172,6 +162,7 @@ public class MainActivity extends Activity {
             findViewById(R.id.mapCardHomeContainer).setVisibility(View.VISIBLE);
             final MapFragment mapFragmentHome = (MapFragment) getFragmentManager().findFragmentById(R.id.mapCardHome);
             final GoogleMap map = mapFragmentHome.getMap();
+            map.clear();
             map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
                 public void onMapClick(LatLng latLng) {
@@ -181,6 +172,9 @@ public class MainActivity extends Activity {
                 }
             });
             map.setMyLocationEnabled(false);
+            map.getUiSettings().setAllGesturesEnabled(false);
+            map.getUiSettings().setZoomControlsEnabled(false);
+
             map.setOnMapLoadedCallback  (new GoogleMap.OnMapLoadedCallback() {
                 @Override
                 public void onMapLoaded() {
@@ -189,7 +183,7 @@ public class MainActivity extends Activity {
                     float coor3 = prefs.getFloat("Homenelat", 0);
                     float coor4 = prefs.getFloat("Homenelng", 0);
 
-                    map.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(new LatLng(coor1, coor2), new LatLng(coor3, coor4)), 100));
+                    map.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(new LatLng(coor1, coor2), new LatLng(coor3, coor4)), 50));
                 }
             });
             PolylineOptions rectOptions = new PolylineOptions();
@@ -208,8 +202,8 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        ((TextView)findViewById(R.id.home_address)).setText("Home: " + prefs.getString("home_address", "unset"));
-        ((TextView)findViewById(R.id.work_address)).setText("Work: " + prefs.getString("work_address", "unset"));
+        ((TextView)findViewById(R.id.home_address)).setText(prefs.getString("home_address", "unset").split(",")[0]);
+        ((TextView)findViewById(R.id.work_address)).setText(prefs.getString("work_address", "unset").split(",")[0]);
         setupMaps();
         //((TextView)findViewById(R.id.preferred_route)).setText("Preferred Route to Work: " + prefs.getString("preferredRouteWork", "unset"));
         //((TextView)findViewById(R.id.preferred_route_home)).setText("Preferred Route to Home: " + prefs.getString("preferredRouteHome", "unset"));
